@@ -18,7 +18,7 @@ export LOCAL_IP=$ip
 export LOCOBOT_IP=$ip
 echo "Binding to Host IP" $ip
 
-python -m Pyro4.naming -n $ip &
+#python -m Pyro4.naming -n $ip &
 BGPID=$!
 sleep 4
 
@@ -27,6 +27,5 @@ echo $ip
 python remote_locobot.py --ip $ip $@ &
 # blocking wait for server to start
 timeout 1m bash -c "until python check_connected.py remotelocobot; do sleep 1; done;" || true
-./launch_navigation.sh
+#./launch_navigation.sh
 
-popd

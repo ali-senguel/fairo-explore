@@ -17,8 +17,8 @@ import KeyboardVoiceIcon from "@material-ui/icons/KeyboardVoice";
 
 import "./Message.css";
 
-const recognition = new window.webkitSpeechRecognition();
-recognition.lang = "en-US";
+//const recognition = new window.webkitSpeechRecognition();
+//recognition.lang = "en-US";
 
 class Message extends Component {
   constructor(props) {
@@ -91,6 +91,12 @@ class Message extends Component {
   }
 
   listen() {
+    //update the variable and call listen
+    console.log("togglelisten");
+    this.setState({ recognizing: !this.state.recognizing }, this.listen);
+  }
+  /*
+  listen() {
     //start listening and grab the output form ASR model to display in textbox
     if (this.state.recognizing) {
       recognition.start();
@@ -114,7 +120,7 @@ class Message extends Component {
       }
     };
   }
-
+*/
   handleSubmit() {
     //get the message
     var chatmsg = document.getElementById("msg").innerHTML;

@@ -42,13 +42,13 @@ class RemoteLocobot(object):
                 assets_path, "default.phys_scene_config.json"
             )
         backend_config["noisy"] = noisy
-        print("backend_config", backend_config)
+        print("BACKEND", backend_config)
         self.backend_config = backend_config
         # we do it this way to have the ability to restart from the client at arbitrary times
-        self.restart_habitat()
+        #self.restart_habitat()
 
         # check skfmm, skimage in installed, its necessary for slam
-        self._done = True
+        #self._done = True
 
     def restart_habitat(self):
         if hasattr(self, "_robot"):
@@ -409,11 +409,15 @@ class RemoteLocobot(object):
             return "PREEMPTED"
         else:
             return "UNKNOWN"
+            
+    
+    def test_print(self):
+        print("SUCESSFUL PRINT")
 
 
 if __name__ == "__main__":
     import argparse
-
+   
     parser = argparse.ArgumentParser(description="Pass in server device IP")
     parser.add_argument(
         "--ip",
@@ -439,23 +443,31 @@ if __name__ == "__main__":
 
     np.random.seed(123)
 
+    
+    print (f'IP:: >  {args.ip}')
+
     # GLContexts in general are thread local
     # The PyRobot <-> Habitat integration is not thread-aware / thread-configurable,
     # so our only option is to disable Pyro4's threading, and instead switch to
     # multiplexing (which isn't too bad)
     Pyro4.config.SERVERTYPE = "multiplex"
+    robot = RemoteLocobot( scene_path=args.scene_path, noisy=args.noisy)
+    
+    
+    
+    #daemon = Pyro4.Daemon(args.ip)
+    #daemon = Pyro4.Daemon()
+    print ("Deamen server created")
+    #ns = Pyro4.locateNS()
+    
+    #robot_uri = daemon.register(robot)
+    
+    daemon = Pyro4.Daemon.serveSimple({robot: 'remotelocobot',}, host=args.ip, port=9090, ns=False, verbose=True)
+    
+    #ns.register("remotelocobot", robot_uri)
 
-    with Pyro4.Daemon(args.ip) as daemon:
-        robot = RemoteLocobot(
-            scene_path=args.scene_path,
-            noisy=args.noisy,
-        )
-        robot_uri = daemon.register(robot)
-        with Pyro4.locateNS() as ns:
-            ns.register("remotelocobot", robot_uri)
-
-        print("Server is started...")
-        daemon.requestLoop()
+    #print("Server is started...")
+    #daemon.requestLoop()
 
 
 # Below is client code to run in a separate Python shell...

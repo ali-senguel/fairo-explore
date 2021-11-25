@@ -25,9 +25,9 @@ from droidlet.memory.memory_nodes import PlayerNode
 from droidlet.perception.semantic_parsing.nsp_querier import NSPQuerier
 from agents.droidlet_agent import DroidletAgent
 from agents.argument_parser import ArgumentParser
-import agents.locobot.label_prop as LP
+#import agents.locobot.label_prop as LP
 from droidlet.memory.robot.loco_memory import LocoAgentMemory, DetectedObjectNode
-from droidlet.perception.robot import Perception
+#from droidlet.perception.robot import Perception
 from droidlet.perception.semantic_parsing.utils.interaction_logger import InteractionLogger
 from self_perception import SelfPerception
 from droidlet.interpreter.robot import (
@@ -147,27 +147,23 @@ class LocobotAgent(DroidletAgent):
         # Returns an array of objects with updated masks
         @sio.on("label_propagation")
         def label_propagation(sid, postData):
-            objects = LP.label_propagation(postData)
-            sio.emit("labelPropagationReturn", objects)
+            pass
 
         @sio.on("save_rgb_seg")
         def save_rgb_seg(sid, postData):
-            LP.save_rgb_seg(postData)
-            if "callback" in postData and postData["callback"]:
-                sio.emit("saveRgbSegCallback")
+            pass
 
         @sio.on("save_annotations")
         def save_annotations(sid, categories):
-            LP.save_annotations(categories)
+            pass
 
         @sio.on("save_categories_properties")
         def save_categories_properties(sid, categories, properties):
-            LP.save_categories_properties(categories, properties)
+            pass
 
         @sio.on("retrain_detector")
         def retrain_detector(sid, settings={}):
-            inference_json = LP.retrain_detector(settings)
-            sio.emit("annotationRetrain", inference_json)
+            pass
 
         @sio.on("switch_detector")
         def switch_detector(sid):
@@ -200,7 +196,8 @@ class LocobotAgent(DroidletAgent):
                 return
 
             print("switching to", model_path)
-            self.perception_modules["vision"] = Perception(model_path, default_keypoints_path=True)
+            #self.perception_modules["vision"] = Perception(model_path, default_keypoints_path=True)
+            self.perception_modules["vision"] = None
 
     def init_memory(self):
         """Instantiates memory for the agent.
@@ -343,8 +340,8 @@ if __name__ == "__main__":
     logging.info("LOG LEVEL: {}".format(logger.level))
 
     # Check that models and datasets are up to date
-    if not opts.dev:
-        try_download_artifacts(agent="locobot")
+    #if not opts.dev:
+        #try_download_artifacts(agent="locobot")
 
     set_start_method("spawn", force=True)
 

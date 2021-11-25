@@ -11,12 +11,15 @@ from pycococreatortools import pycococreatortools
 from sklearn.model_selection import train_test_split
 import time
 
+"""
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.data.datasets import register_coco_instances
 from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
 from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
+"""
+
 
 from droidlet import dashboard
 if __name__ == "__main__":
@@ -25,8 +28,8 @@ if __name__ == "__main__":
     dashboard.start()
 from agents.argument_parser import ArgumentParser
 from droidlet.event import sio
-from droidlet.perception.robot import LabelPropagate
-import agents.locobot.label_prop as LP
+#from droidlet.perception.robot import LabelPropagate
+#import agents.locobot.label_prop as LP
 log_formatter = logging.Formatter(
     "%(asctime)s [%(filename)s:%(lineno)s - %(funcName)s() %(levelname)s]: %(message)s"
 )
