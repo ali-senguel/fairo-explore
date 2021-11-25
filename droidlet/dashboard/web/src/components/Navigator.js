@@ -22,7 +22,7 @@ class Navigator extends React.Component {
   constructor(props) {
     super(props);
     this.initialState = {
-      move: 0.3,
+      move: 1,
       yaw: 0.01,
       velocity: 0.1,
       data_logging_time: 30,
@@ -150,18 +150,18 @@ class Navigator extends React.Component {
         <div>
           <label> Base </label>
           <button id="key_up" onClick={this.handleClick}>
-            Up
+            UP
           </button>
         </div>
         <div>
           <button id="key_left" onClick={this.handleClick}>
-            Left
+            LEFT
           </button>
           <button id="key_down" onClick={this.handleClick}>
-            Down
+            DOWN
           </button>
           <button id="key_right" onClick={this.handleClick}>
-            Right
+            RIGHT
           </button>
         </div>
         <br />

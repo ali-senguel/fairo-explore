@@ -45,7 +45,7 @@ class RemoteLocobot(object):
         print("backend_config", backend_config)
         self.backend_config = backend_config
         # we do it this way to have the ability to restart from the client at arbitrary times
-        self.restart_habitat()
+        #self.restart_habitat()
 
         # check skfmm, skimage in installed, its necessary for slam
         self._done = True
@@ -409,6 +409,9 @@ class RemoteLocobot(object):
             return "PREEMPTED"
         else:
             return "UNKNOWN"
+            
+    def test_print(self):
+        print("Connected")
 
 
 if __name__ == "__main__":
@@ -419,7 +422,8 @@ if __name__ == "__main__":
         "--ip",
         help="Server device (robot) IP. Default is 192.168.0.0",
         type=str,
-        default="192.168.0.0",
+        default = "192.168.89.166"
+        #default="192.168.0.0",
     )
     parser.add_argument(
         "--scene_path",
@@ -444,7 +448,13 @@ if __name__ == "__main__":
     # so our only option is to disable Pyro4's threading, and instead switch to
     # multiplexing (which isn't too bad)
     Pyro4.config.SERVERTYPE = "multiplex"
-
+    
+    robot = RemoteLocobot(
+            scene_path=args.scene_path,
+            noisy=args.noisy,
+        )
+    daemon = Pyro4.Daemon.serveSimple({robot: 'remotelocobot',}, host=args.ip, port=9090, ns=False, verbose=True)
+"""
     with Pyro4.Daemon(args.ip) as daemon:
         robot = RemoteLocobot(
             scene_path=args.scene_path,
@@ -457,7 +467,7 @@ if __name__ == "__main__":
         print("Server is started...")
         daemon.requestLoop()
 
-
+"""
 # Below is client code to run in a separate Python shell...
 # import Pyro4
 # robot = Pyro4.Proxy("PYRONAME:remotelocobot")

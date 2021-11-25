@@ -201,6 +201,7 @@ class DroidletAgent(BaseAgent):
         ...
         """
         raise NotImplementedError
+        
 
     def init_perception(self):
         """

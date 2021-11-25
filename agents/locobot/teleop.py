@@ -34,7 +34,7 @@ class O3dViz(threading.Thread):
     def put(self, name, command, obj):
         # pass
         self.q.put([name, command, obj])
-
+'''
     def run(self):        
         app = gui.Application.instance
 
@@ -69,7 +69,7 @@ class O3dViz(threading.Thread):
                 w.post_redraw()
             except queue.Empty:
                 pass
-
+'''
 
 if __name__ == "__main__":
     # this line has to go before any imports that contain @sio.on functions
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     start_time = time.time()
     fps_freq = 1 # displays the frame rate every 1 second
     counter = 0
-    
+    '''
     while True:
         counter += 1
         if (time.time() - start_time) > fps_freq :
@@ -306,3 +306,4 @@ if __name__ == "__main__":
             
         
         time.sleep(0.001)
+        '''
