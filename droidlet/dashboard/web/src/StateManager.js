@@ -425,6 +425,27 @@ class StateManager {
           // 4
           commands.push("TILT_DOWN");
         }
+        if (k === 53) {
+          commands.push("MOVE_JOINT_1");
+        }
+        if (k === 54) {
+          commands.push("MOVE_JOINT_2");
+        }
+        if (k === 55) {
+          commands.push("MOVE_JOINT_3");
+        }
+        if (k === 56) {
+          commands.push("MOVE_JOINT_4");
+        }
+        if (k === 57) {
+          commands.push("MOVE_JOINT_5");
+        }
+        if (k === 58) {
+          commands.push("MOVE_JOINT_6");
+        }
+        if (k === 59) {
+          commands.push("GO_HOME");
+        }
       }
     }
     if (commands.length > 0) {

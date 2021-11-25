@@ -128,6 +128,20 @@ class Navigator extends React.Component {
       stateManager.keyHandler({ 51: true });
     } else if (id === "tilt_down") {
       stateManager.keyHandler({ 52: true });
+    } else if (id === "move_joint_1") {
+      stateManager.keyHandler({ 53: true });
+    } else if (id === "move_joint_2") {
+      stateManager.keyHandler({ 54: true });
+    } else if (id === "move_joint_3") {
+      stateManager.keyHandler({ 55: true });
+    } else if (id === "move_joint_4") {
+      stateManager.keyHandler({ 56: true });
+    } else if (id === "move_joint_5") {
+      stateManager.keyHandler({ 57: true });
+    } else if (id === "move_joint_6") {
+      stateManager.keyHandler({ 58: true });
+    } else if (id === "go_home") {
+      stateManager.keyHandler({ 59: true });
     }
   }
 
@@ -162,6 +176,35 @@ class Navigator extends React.Component {
           </button>
           <button id="key_right" onClick={this.handleClick}>
             RIGHT
+          </button>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div>
+          <button id="move_joint_1" onClick={this.handleClick}>
+            Move Joint 1
+          </button>
+          <button id="move_joint_2" onClick={this.handleClick}>
+            Move Joint 2
+          </button>
+          <button id="move_joint_3" onClick={this.handleClick}>
+            Move Joint 3
+          </button>
+          <button id="move_joint_4" onClick={this.handleClick}>
+            Move Joint 4
+          </button>
+          <button id="move_joint_5" onClick={this.handleClick}>
+            Move Joint 5
+          </button>
+          <button id="move_joint_6" onClick={this.handleClick}>
+            Move Joint 6
+          </button>
+        </div>
+        <br />
+        <div>
+          <button id="go_home" onClick={this.handleClick}>
+            Go Home
           </button>
         </div>
         <br />

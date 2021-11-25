@@ -1,7 +1,6 @@
 """
 Copyright (c) Facebook, Inc. and its affiliates.
 """
-
 import os
 import time
 import signal
@@ -11,6 +10,8 @@ import faulthandler
 from multiprocessing import set_start_method
 import shutil
 
+import Pyro4
+
 from droidlet import dashboard
 #from droidlet.tools.data_scripts.try_download import try_download_artifacts
 
@@ -18,24 +19,15 @@ if __name__ == "__main__":
     # this line has to go before any imports that contain @sio.on functions
     # or else, those @sio.on calls become no-ops
     dashboard.start()
-from droidlet.dialog.dialogue_manager import DialogueManager
-from droidlet.dialog.map_to_dialogue_object import DialogueObjectMapper
 from droidlet.base_util import to_player_struct, Pos, Look, Player
-from droidlet.memory.memory_nodes import PlayerNode
-from droidlet.perception.semantic_parsing.nsp_querier import NSPQuerier
 from agents.droidlet_agent import DroidletAgent
 from agents.argument_parser import ArgumentParser
-#import agents.locobot.label_prop as LP
 from droidlet.memory.robot.loco_memory import LocoAgentMemory, DetectedObjectNode
-#from droidlet.perception.robot import Perception
 from droidlet.perception.semantic_parsing.utils.interaction_logger import InteractionLogger
-from self_perception import SelfPerception
+
 from droidlet.interpreter.robot import (
     dance,
-    default_behaviors,
-    LocoGetMemoryHandler,
-    PutMemoryHandler,
-    LocoInterpreter,
+    default_behaviors
 )
 from droidlet.dialog.robot import LocoBotCapabilities
 import droidlet.lowlevel.rotation as rotation
@@ -49,6 +41,10 @@ log_formatter = logging.Formatter(
 )
 logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger().handlers.clear()
+
+Pyro4.config.SERIALIZER = "pickle"
+Pyro4.config.SERIALIZERS_ACCEPTED.add("pickle")
+Pyro4.config.PICKLE_PROTOCOL_VERSION = 4
 
 
 class LocobotAgent(DroidletAgent):
@@ -82,11 +78,12 @@ class LocobotAgent(DroidletAgent):
         self.last_task_memid = None
         self.point_targets = []
         self.init_event_handlers()
+        
+
+        
         # list of (prob, default function) pairs
         if self.backend == 'habitat':
             self.visible_defaults = [(1.0, default_behaviors.explore)]
-        elif self.backend == 'hellorobot':
-            self.visible_defaults = []
         else:
             raise RuntimeError("Unknown backend specified {}" % (self.backend, ))
         self.interaction_logger = InteractionLogger()
@@ -94,6 +91,7 @@ class LocobotAgent(DroidletAgent):
             shutil.rmtree("annotation_data/rgb")
         if os.path.exists("annotation_data/seg"):
             shutil.rmtree("annotation_data/seg")
+            
 
     def init_event_handlers(self):
         super().init_event_handlers()
@@ -126,7 +124,28 @@ class LocobotAgent(DroidletAgent):
                     self.mover.bot.set_tilt(self.mover.bot.get_tilt() - 0.08)
                 elif command == "TILT_DOWN":
                     self.mover.bot.set_tilt(self.mover.bot.get_tilt() + 0.08)
-            self.mover.move_relative([movement])
+                elif command == "MOVE_JOINT_1":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_1()
+                elif command == "MOVE_JOINT_2":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_2()
+                elif command == "MOVE_JOINT_3":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_3()    
+                elif command == "MOVE_JOINT_4":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_4()
+                elif command == "MOVE_JOINT_5":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_5()
+                elif command == "MOVE_JOINT_6":
+                    print("MOVE JOINT BUTTON PRESSED")
+                    self.mover.move_6() 
+                elif command == "GO_HOME":
+                    self.mover.go_home()   
+
+            #self.mover.move_relative([movement])
 
         @sio.on("shutdown")
         def _shutdown(sid, data):
@@ -150,57 +169,6 @@ class LocobotAgent(DroidletAgent):
             objects = LP.label_propagation(postData)
             sio.emit("labelPropagationReturn", objects)
 
-        @sio.on("save_rgb_seg")
-        def save_rgb_seg(sid, postData):
-            LP.save_rgb_seg(postData)
-            if "callback" in postData and postData["callback"]:
-                sio.emit("saveRgbSegCallback")
-
-        @sio.on("save_annotations")
-        def save_annotations(sid, categories):
-            LP.save_annotations(categories)
-
-        @sio.on("save_categories_properties")
-        def save_categories_properties(sid, categories, properties):
-            LP.save_categories_properties(categories, properties)
-
-        @sio.on("retrain_detector")
-        def retrain_detector(sid, settings={}):
-            inference_json = LP.retrain_detector(settings)
-            sio.emit("annotationRetrain", inference_json)
-
-        @sio.on("switch_detector")
-        def switch_detector(sid):
-            model_dir = "annotation_data/model"
-            model_names = os.listdir(model_dir)
-            model_nums = list(map(lambda x: int(x.split("v")[1]), model_names))
-            last_model_num = max(model_nums)
-            model_path = os.path.join(model_dir, "v" + str(last_model_num))
-            detector_weights = "model_999.pth"
-            properties_file = "props.json"
-            things_file = "things.json"
-
-            files = os.listdir(model_path)
-            if detector_weights not in files:
-                print(
-                    "Error switching model:",
-                    os.path.join(model_path, detector_weights),
-                    "not found",
-                )
-                return
-            if properties_file not in files:
-                print(
-                    "Error switching model:",
-                    os.path.join(model_path, properties_file),
-                    "not found",
-                )
-                return
-            if things_file not in files:
-                print("Error switching model:", os.path.join(model_path, things_file), "not found")
-                return
-
-            print("switching to", model_path)
-            self.perception_modules["vision"] = Perception(model_path, default_keypoints_path=True)
 
     def init_memory(self):
         """Instantiates memory for the agent.
@@ -271,45 +239,8 @@ class LocobotAgent(DroidletAgent):
 
     def init_physical_interfaces(self):
         """Instantiates the interface to physically move the robot."""
-        if self.backend == 'habitat':
-            from droidlet.lowlevel.locobot.locobot_mover import LoCoBotMover
-            print(f"IP::: PHYSICAL INTERFACE {self.opts.ip}")
-            self.mover = LoCoBotMover(ip=self.opts.ip, backend=self.opts.backend)
-        else:
-            from droidlet.lowlevel.hello_robot.hello_robot_mover import HelloRobotMover
-            self.mover = HelloRobotMover(ip=self.opts.ip)
-
-    def get_player_struct_by_name(self, speaker_name):
-        p = self.memory.get_player_by_name(speaker_name)
-        if p:
-            return p.get_struct()
-        else:
-            return None
-
-    def get_other_players(self):
-        return [self.player]
-
-    def get_incoming_chats(self):
-        all_chats = []
-        speaker_name = "dashboard"
-        if self.dashboard_chat is not None:
-            if not self.memory.get_player_by_name(speaker_name):
-                PlayerNode.create(
-                    self.memory,
-                    to_player_struct((None, None, None), None, None, None, speaker_name),
-                )
-            all_chats.append(self.dashboard_chat)
-            self.dashboard_chat = None
-        return all_chats
-
-    # # FIXME!!!!
-    def send_chat(self, chat: str):
-        logging.info("Sending chat: {}".format(chat))
-        # Send the socket event to show this reply on dashboard
-        sio.emit("showAssistantReply", {"agent_reply": "Agent: {}".format(chat)})
-        self.memory.add_chat(self.memory.self_memid, chat)
-        # actually send the chat, FIXME FOR HACKATHON
-        # return self._cpp_send_chat(chat)
+        print(f"IP::: PHYSICAL INTERFACE {self.opts.ip}")
+        self.mover = Pyro4.core.Proxy('PYRO:remotefranka@' + self.opts.ip + ':9090')
 
     def step(self):
         #super().step()
@@ -357,3 +288,4 @@ if __name__ == "__main__":
 
     sa = LocobotAgent(opts)
     sa.start()
+
