@@ -17,6 +17,7 @@ import TimelineDetails from "./components/Timeline/TimelineDetails";
 import MobileMainPane from "./MobileMainPane";
 import Retrainer from "./components/Retrainer";
 import Navigator from "./components/Navigator";
+import FrankaArmMover from "./components/FrankaArmMover";
 import { isMobile } from "react-device-detect";
 import MainPane from "./MainPane";
 
@@ -451,7 +452,7 @@ class StateManager {
     if (commands.length > 0) {
       let movementValues = {};
       this.refs.forEach((ref) => {
-        if (ref instanceof Navigator) {
+        if (ref instanceof Navigator || FrankaArmMover) {
           movementValues = ref.state;
         }
       });
