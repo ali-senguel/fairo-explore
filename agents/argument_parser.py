@@ -7,7 +7,7 @@ import os
 
 class ArgumentParser:
     def __init__(self, agent_type, base_path):
-        self.agent_parsers = {"Minecraft": self.add_mc_parser, "Locobot": self.add_loco_parser}
+        self.agent_parsers = {"Minecraft": self.add_mc_parser, "Locobot": self.add_loco_parser,"Roboarm": self.add_roboarm_parser}
         self.base_path = base_path
         self.parser = argparse.ArgumentParser()
 
@@ -91,6 +91,28 @@ class ArgumentParser:
             "--geoscorer_model_path", default="", help="path to geoscorer model"
         )
         mc_parser.add_argument("--port", type=int, default=25565)
+
+    def add_roboarm_parser(self):
+        roboarm_parser = self.parser.add_argument_group("Roboarm Agent Args")
+        IP = "192.168.1.244"
+        if os.getenv("ROBOARM_IP"):
+            IP = os.getenv("ROBOARM_IP")
+            print("setting default roboarm ip from env variable LOCOBOT_IP={}".format(IP))
+        roboarm_parser.add_argument("--ip", default=IP, help="IP of the roboarm")
+        roboarm_parser.add_argument(
+            "--incoming_chat_path", default="incoming_chat.txt", help="path to incoming chat file"
+        )
+        roboarm_parser.add_argument("--backend", default="polysim")
+        roboarm_parser.add_argument(
+            "--perception_model_dir",
+            default="models/perception/",
+            help="path to perception model data dir",
+        )
+        roboarm_parser.add_argument(
+            "--check_controller",
+            action="store_true",
+            help="sanity checks the robot's movement, camera, arm.",
+        )
 
     def add_loco_parser(self):
         loco_parser = self.parser.add_argument_group("Locobot Agent Args")

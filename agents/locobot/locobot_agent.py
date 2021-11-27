@@ -62,7 +62,7 @@ class LocobotAgent(DroidletAgent):
 
     coordinate_transforms = rotation
 
-    def __init__(self, opts, name="Locobot"):
+    def __init__(self, opts, name="RoboArm"):
         self.backend = opts.backend
         super(LocobotAgent, self).__init__(opts)
         logging.info("LocobotAgent.__init__ started")
@@ -84,6 +84,8 @@ class LocobotAgent(DroidletAgent):
         # list of (prob, default function) pairs
         if self.backend == 'habitat':
             self.visible_defaults = [(1.0, default_behaviors.explore)]
+        elif self.backend == 'polysim':
+            self.visible_defaults = [(1.0, default_behaviors.explore)] 
         else:
             raise RuntimeError("Unknown backend specified {}" % (self.backend, ))
         self.interaction_logger = InteractionLogger()
@@ -267,10 +269,12 @@ class LocobotAgent(DroidletAgent):
 
 if __name__ == "__main__":
     base_path = os.path.dirname(__file__)
-    parser = ArgumentParser("Locobot", base_path)
+    parser = ArgumentParser("Roboarm", base_path)
+    
     opts = parser.parse()
+    print (opts.ip, opts.backend)
     opts.ip = "149.157.156.196"
-    print(f"IP::: LOCOBOT AGENT {opts.ip}")
+    print(f"IP::: Roboarm AGENT {opts.ip}")
 
     logging.basicConfig(level=opts.log_level.upper())
     # set up stdout logging
