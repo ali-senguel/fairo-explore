@@ -269,7 +269,7 @@ if __name__ == "__main__":
     base_path = os.path.dirname(__file__)
     parser = ArgumentParser("Locobot", base_path)
     opts = parser.parse()
-    opts.ip = "192.168.89.166"
+    opts.ip = "149.157.156.196"
     print(f"IP::: LOCOBOT AGENT {opts.ip}")
 
     logging.basicConfig(level=opts.log_level.upper())
